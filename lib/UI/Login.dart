@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_awesome_alert_box/flutter_awesome_alert_box.dart';
+import 'package:headup_loading/headup_loading.dart';
 
 import 'package:resturant_app/UI/Food.dart';
 import 'package:resturant_app/UI/Register.dart';
+import 'package:resturant_app/model/DataBase.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -9,8 +12,10 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  @override
+  var email = TextEditingController();
+  var password = TextEditingController();
 
+var fireDB = DataBase();
   RegisterBtn(){
     Navigator.push(
         context,
@@ -18,12 +23,33 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   LoginBtn(){
-    Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => Food()));
+//    Navigator.pushReplacement(
+//        context,
+//        MaterialPageRoute(builder: (context) => Food()));
+    HeadUpLoading.show(context);
+    fireDB.submit(email.text.trim(), password.text.trim(),context).then((userId){
+
+
+
+      // CircularProgressIndicator();
+      if(userId != "not"){
+
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Food(userId)));
+        //  onSignIn();    // some error here on lesson 5 in 12:00 min almost, because no parameter given
+      }else if(userId=="not") {
+        // username or password are wrong
+        print('wrong password');
+        HeadUpLoading.hide();
+        DangerAlertBox(context:context,title: "",messageText:"Email or password are wrong",buttonText: "close");
+
+      }
+
+
+    });
+
   }
 
-
+@override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
@@ -56,7 +82,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           padding: EdgeInsets.only(left: 10,right: 10,top: 20),
                           child:  Card(
                             child: TextFormField(
-
+                              controller: email,
                               decoration: InputDecoration(
                                 labelText: 'Enter your Email',
                                 prefixIcon: Icon(Icons.email),
@@ -68,10 +94,13 @@ class _LoginScreenState extends State<LoginScreen> {
                           padding: EdgeInsets.only(left: 10,right: 10,top: 5),
                           child:  Card(
                             child: TextFormField(
-
+                              controller: password,
+                              obscureText: true,
                               decoration: InputDecoration(
                                 labelText: 'Enter your Password',
                                 prefixIcon: Icon(Icons.lock),
+
+
                               ),
                             ),
                           ),

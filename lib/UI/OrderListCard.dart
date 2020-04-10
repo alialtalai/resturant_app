@@ -1,28 +1,38 @@
 import 'package:flutter/material.dart';
+import 'package:headup_loading/headup_loading.dart';
+import 'package:resturant_app/model/DataBase.dart';
 
 import 'OrderListDetail.dart';
 
 class OrderCard extends StatelessWidget {
-  var img;
+
   var name;
   var date;
   var id;
-  OrderCard({this.img,this.name,this.date,this.id});
+  var userId;
+  OrderCard({this.name,this.date,this.id,this.userId});
+
+  var fireDB =DataBase();
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       child: Card(
         child: ListTile(
-          leading: Image.asset(img,height: 60,width: 60,),
+          leading: Image.asset('assets/profile.png',height: 60,width: 60,),
           title: Text(name),
           subtitle: Text(date),
         ),
       ),
           onTap: (){
-            Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => OrderListDetail()));
+            HeadUpLoading.show(context);
+        fireDB.FetchOrderDetail(userId, id).then((detailList){
+          HeadUpLoading.hide();
+          Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => OrderListDetail(order: detailList,userId: userId,itemId: id,)));
+        });
+
           },
     );
   }

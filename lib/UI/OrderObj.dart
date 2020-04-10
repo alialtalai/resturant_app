@@ -7,14 +7,25 @@ class OrderObj{
 
 class userOrder{
 
-  var img;
+
   var name;
   var date;
-  userOrder({this.img,this.name,this.date});
+  var id;
+  userOrder({this.name,this.date,this.id});
 }
 
-class finalOrder{
+class DetailOrder{
+  List addition ;
+  List male ;
+  List price ;
+  var totalprice ;
+  var delivery ;
+  var rating ;
+  DetailOrder({this.addition,this.male,this.price,this.totalprice,this.delivery,this.rating});
+}
+
+class userInfo{
   var name;
-  var price;
-  finalOrder({this.name,this.price});
+  var email;
+  userInfo({this.name,this.email});
 }

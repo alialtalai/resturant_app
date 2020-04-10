@@ -1,4 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:resturant_app/model/DataBase.dart';
 
 class Account extends StatefulWidget {
   @override
@@ -8,25 +11,44 @@ class Account extends StatefulWidget {
 class _AccountState extends State<Account> {
   var name = TextEditingController();
   var phone = TextEditingController();
-  var email = TextEditingController();
-  var password = TextEditingController();
+ var userId;
+  var fireDB = DataBase();
 
   UpdateBtn() {
-    print(name.text);
+    fireDB.UpdateAccount(name: name.text.trim(),phone: phone.text.trim(),userID:userId,context: context );
   }
 
-  DeleteBtn(){
 
-  }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+
+    FirebaseAuth.instance.currentUser().then((userid) {
+      Firestore.instance
+          .collection('user info')
+          .document(userid.uid)
+          .get()
+          .then((DocumentSnapshot ds) {
+        // use ds as a snapshot
+        setState(() {
+          userId = userid.uid;
+          name.text = ds['name'];
+          phone.text = ds['phone'];
+        });
+
+
+
+      });
+    });
+
   }
 
   @override
   Widget build(BuildContext context) {
+
+
     return Scaffold(
       appBar: AppBar(backgroundColor: Colors.amber,elevation: 0,),
       backgroundColor: Colors.amber,
@@ -73,42 +95,7 @@ class _AccountState extends State<Account> {
                 )
 
             ),
-            Padding(
-                padding: EdgeInsets.only(left: 30,right: 30,top:10),
-                child: Container(
-                  child: TextFormField(
-                    controller: email,
-                    decoration: InputDecoration(
-                        border: InputBorder.none,
-                        hintText: 'Enter Your Email',
-                        prefixIcon: Icon(Icons.email)
-                    ),
-                  ),
-                  decoration: BoxDecoration(
-                      color:Colors.white,
-                      borderRadius: BorderRadius.all(Radius.circular(45))
-                  ),
-                )
 
-            ),
-            Padding(
-                padding: EdgeInsets.only(left: 30,right: 30,top:10),
-                child: Container(
-                  child: TextFormField(
-                    controller: password,
-                    decoration: InputDecoration(
-                        border: InputBorder.none,
-                        hintText: 'Enter Your Password',
-                        prefixIcon: Icon(Icons.lock)
-                    ),
-                  ),
-                  decoration: BoxDecoration(
-                      color:Colors.white,
-                      borderRadius: BorderRadius.all(Radius.circular(45))
-                  ),
-                )
-
-            ),
             FittedBox(
               alignment: Alignment.center,
               child: Row(

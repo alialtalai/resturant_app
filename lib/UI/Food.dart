@@ -1,16 +1,22 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:resturant_app/UI/Account.dart';
 import 'package:resturant_app/UI/CheckOut.dart';
 import 'package:resturant_app/UI/OrderList.dart';
 import 'package:resturant_app/UI/OrderObj.dart';
+import 'package:resturant_app/model/DataBase.dart';
 
 class Food extends StatefulWidget {
+  var userID;
+ Food(this.userID);
   @override
   _FoodState createState() => _FoodState();
 }
 
 class _FoodState extends State<Food> {
 
+  var userID;
   var name='User1';
   var email ='exampe@mail.com';
   var items ='';
@@ -35,12 +41,45 @@ class _FoodState extends State<Food> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    setState(() {
 
+      FirebaseAuth.instance.currentUser().then((userid) {
+        Firestore.instance
+            .collection('user info')
+            .document(userid.uid)
+            .get()
+            .then((DocumentSnapshot ds) {
+          // use ds as a snapshot
+          setState(() {
+            name = ds['name'];
+            email = ds['email'];
+          });
+
+        });
+      });
+
+    });
 
   }
 
   @override
   Widget build(BuildContext context) {
+    FirebaseAuth.instance.currentUser().then((userid) {
+      Firestore.instance
+          .collection('user info')
+          .document(userid.uid)
+          .get()
+          .then((DocumentSnapshot ds) {
+        // use ds as a snapshot
+        setState(() {
+          userID = userid.uid;
+          name = ds['name'];
+          email = ds['email'];
+        });
+
+      });
+    });
+
     return Scaffold(
       appBar: AppBar(backgroundColor: Colors.amber,
         ),
@@ -64,7 +103,6 @@ class _FoodState extends State<Food> {
               leading: Icon(Icons.account_box),
               title: Text('My account'),
               onTap: () {
-//                 Navigator.push(context, MaterialPageRoute(builder: (context) => myAccount()));
                 Navigator.push(context,
                     MaterialPageRoute(builder: (context) => Account()));
               },
@@ -73,9 +111,8 @@ class _FoodState extends State<Food> {
               leading: Icon(Icons.shopping_basket),
               title: Text('My Order'),
               onTap: () {
-//                 Navigator.push(context, MaterialPageRoute(builder: (context) => myAccount()));
                 Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => OrderList()));
+                    MaterialPageRoute(builder: (context) => OrderList(userId:userID)));
               },
             ),
           ],

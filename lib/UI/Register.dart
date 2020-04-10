@@ -1,4 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_awesome_alert_box/flutter_awesome_alert_box.dart';
+import 'package:resturant_app/model/DataBase.dart';
 
 class Register extends StatefulWidget {
   @override
@@ -10,9 +13,27 @@ class _RegisterState extends State<Register> {
   var phone = TextEditingController();
   var email = TextEditingController();
   var password = TextEditingController();
+  var fireDB = DataBase();
 
   RegiserBtn() {
-    print(name.text);
+    if (name.text.isEmpty || phone.text.isEmpty)
+      InfoAlertBox(context: context, infoMessage: 'All Field are required',title: 'Alert');
+    else if(email.text.isEmpty || phone.text.isEmpty)
+      InfoAlertBox(context: context, infoMessage: 'All Field are required',title: 'Alert');
+    else{
+      fireDB.RegisterUser(name.text, email.text, password.text, phone.text).then((userID){
+       if(userID != null)
+         SuccessAlertBox(context: context,messageText: 'You register successfully',title: 'Successful');
+       else{
+         InfoAlertBox(context: context, infoMessage: 'Email is used before',title: 'Alert');
+
+       }
+
+      });
+
+    }
+
+
   }
 
 
@@ -51,6 +72,7 @@ class _RegisterState extends State<Register> {
                 child: Container(
                   child: TextFormField(
                     controller: phone,
+                    keyboardType: TextInputType.numberWithOptions(),
                     decoration: InputDecoration(
                         border: InputBorder.none,
                         hintText: 'Enter Your Phone',

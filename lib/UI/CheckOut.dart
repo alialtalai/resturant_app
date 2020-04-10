@@ -1,9 +1,12 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:grouped_buttons/grouped_buttons.dart';
 import 'package:flutter_awesome_alert_box/flutter_awesome_alert_box.dart';
 import 'package:resturant_app/UI/ItemCard.dart';
 import 'package:resturant_app/UI/OrderObj.dart';
+import 'package:resturant_app/model/DataBase.dart';
 
 class CheckOut extends StatefulWidget {
   List<OrderObj> UserOrder ;
@@ -15,11 +18,24 @@ class CheckOut extends StatefulWidget {
 class _CheckOutState extends State<CheckOut> {
   var price = 0.0;
   var item = 0 ;
-
+  var fireDB = DataBase();
+  var addition = new List();
+  var male = new List();
+  var malePrice = new List();
+  var delivery='';
+  var rating = '1';
 
 
   Buy(BuildContext contxt){
+
+    if(widget.UserOrder.isNotEmpty){
+   fireDB.addOrder(male: male,price: malePrice,delivery: delivery,totalPrice: price,rating: rating,addition: addition);
    SuccessAlertBox(context: contxt,title: 'Successful',messageText: 'You have Order Successfully');
+   widget.UserOrder.clear();
+    }else{
+      InfoAlertBox(context: contxt,title: 'Alert',infoMessage: 'You dont have any item');
+    }
+
   }
 
   DeleteIcon(){
@@ -66,7 +82,8 @@ class _CheckOutState extends State<CheckOut> {
                     physics: NeverScrollableScrollPhysics(),
                     itemCount: widget.UserOrder.length,
                     itemBuilder: (context, index) {
-
+                         male.add(widget.UserOrder[index].name);
+                         malePrice.add(widget.UserOrder[index].price);
                       return ItemCard(name: widget.UserOrder[index].name, price: widget.UserOrder[index].price,img: widget.UserOrder[index].img,);
                     })
             ),
@@ -84,17 +101,17 @@ class _CheckOutState extends State<CheckOut> {
                       "Mayo",
                       "Katchap",
                     ],
-                    onSelected: (List<String> checked) => print(checked.toString())
+                    onSelected: (List<String> checked)=>addition = List.from(checked)
+
+
                 ),
             Divider(),
             RadioButtonGroup(
                 labels: <String>[
                   "Deliver to home",
                   "Deliver to work",
-
-
                 ],
-                onSelected: (String selected) => print(selected),
+                onSelected: (String selected) => delivery=selected,
 
             ),
             Padding(
@@ -118,7 +135,7 @@ class _CheckOutState extends State<CheckOut> {
                     color: Colors.amber,
                   ),
               onRatingUpdate: (rating) {
-                print(rating);
+                this.rating = rating.toString();
               },
             ),
             Padding(
