@@ -122,7 +122,7 @@ class _FoodState extends State<Food> {
         child: Column(
           children: <Widget>[
             ConstrainedBox(
-              constraints: BoxConstraints(maxHeight:500 ),
+              constraints: BoxConstraints(maxHeight:MediaQuery.of(context).size.height*0.7),
               child: GridView.count(
                 crossAxisCount: 2,
 
